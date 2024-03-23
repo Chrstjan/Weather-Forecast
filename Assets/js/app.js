@@ -29,11 +29,22 @@ function getUserLocation(lat, long) {
     })
     .then((json) => {
       console.log(json);
+      saveUserLocation(json);
     })
     .catch((error) => {
       console.log("Error fetching data:", error);
       return null;
     });
+}
+
+function getLocalStorage(key) {
+  let localData = localStorage.getItem(key);
+  return JSON.parse(localData || "[]");
+}
+
+function saveToLocalStorage(key, value) {
+  let serializeValue = JSON.stringify(value);
+  localStorage.setItem(key, serializeValue);
 }
 //#endregion model code
 
@@ -45,8 +56,22 @@ function recivedCoordinates(position) {
 function coordinatesError(error) {
   console.log(error.message);
 }
-//#endregion model code
+
+function saveUserLocation(userLocation) {
+  saveToLocalStorage("userLocation", userLocation.address);
+
+  buildLocationName(userLocation.address);
+}
+//#endregion controller code
 
 //#region view code
+function buildLocationName(locationName) {
+  let location = `
+    <header class="location-header">
+      <h2>${locationName.town}</h2>
+      <button class="search-btn">&#128269;</button>
+    </header>`;
 
+  locationHeader.innerHTML = location;
+}
 //#endregion view code
