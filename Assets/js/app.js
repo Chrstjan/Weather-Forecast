@@ -37,6 +37,25 @@ function getUserLocation(lat, long) {
     });
 }
 
+function getLocalWeatherForecast(lat, long) {
+  fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m,is_day,rain,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,rain,temperature_80m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=Europe%2FBerlin`
+  )
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Network was not ok");
+      }
+      return res.json();
+    })
+    .then((json) => {
+      weatherForecastStructure(json);
+    })
+    .catch((error) => {
+      console.log("Error fetching data:", error);
+      return null;
+    });
+}
+
 function getLocalStorage(key) {
   let localData = localStorage.getItem(key);
   return JSON.parse(localData || "[]");
@@ -51,10 +70,60 @@ function saveToLocalStorage(key, value) {
 //#region controller code
 function recivedCoordinates(position) {
   getUserLocation(position.coords.latitude, position.coords.longitude);
+  getLocalWeatherForecast(position.coords.latitude, position.coords.longitude);
 }
 
 function coordinatesError(error) {
   console.log(error.message);
+}
+
+function weatherForecastStructure(weather) {
+  console.log(weather);
+  const { weekday, month } = convertTime(weather.current.time);
+
+  buildCurrentWeather(weather.current, weekday, month);
+}
+
+function convertTime(currentTime) {
+  const date = new Date(currentTime);
+
+  // console.log(date);
+
+  const weekdays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  const months = [
+    "January",
+    "Febuary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const weekdayIndex = date.getDay();
+  const weekday = weekdays[weekdayIndex];
+
+  // console.log(weekday);
+  const monthIndex = date.getMonth();
+  const month = months[monthIndex];
+
+  // console.log(month);
+
+  return { weekday, month };
 }
 
 function saveUserLocation(userLocation) {
@@ -73,5 +142,20 @@ function buildLocationName(locationName) {
     </header>`;
 
   locationHeader.innerHTML = location;
+}
+
+function buildCurrentWeather(currentWeather, weekday, month) {
+  let weatherCard = `
+    <div>
+      <header>
+        <h4>
+          ${weekday},
+          ${new Date(currentWeather.time).getDate()},
+          ${month}
+        </h4>
+      </header>
+    </div>`;
+
+  app.innerHTML += weatherCard;
 }
 //#endregion view code
