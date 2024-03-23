@@ -154,6 +154,16 @@ function buildCurrentWeather(currentWeather, weekday, month) {
           ${month}
         </h4>
       </header>
+      <div class="wind-temp-container">
+        <h3>${currentWeather.temperature_2m}<sup>&deg;</sup></h3>
+        <div class="wind-container">
+          <span>Wind speed: <p>${currentWeather.wind_speed_10m}</p></span>
+          <span>Wind direction: <p>${
+            currentWeather.wind_direction_10m
+          }</p></span>
+        </div>
+        <h4>${currentWeather.rain}</h4>
+      </div>
     </div>`;
 
   app.innerHTML += weatherCard;
