@@ -1,0 +1,15 @@
+#location-header .location-header {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background: #006edb;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: #fff;
+}
+
+.location-header .search-btn {
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+}
